@@ -12,4 +12,116 @@ Exp : Num
     | {Expr Expr ...}
 =end
 
-puts "Hello world!"
+# Need to implement classes
+class Interpreter
+    def initialize()
+      @definitions = {}
+      @definitions['add'] = '+'
+    end
+  
+    def evaluate(prog)
+      prog.each do |defn|
+        define(defn[:defn])
+      end
+    end
+  
+    def define(defn)
+      id_list = defn[:id_list]
+      expr = defn[:expr]
+      evaluate_expression(expr)
+      #@definitions[id_list] = evaluate_expression(expr)
+    end
+  
+    def lookup(id)
+      @definitions[id]
+    end
+  
+    def evaluate_expression(expr)
+      case expr[:type]
+        when :NumC
+          expr[:value]
+        when :IdC
+          lookup(expr[:name])
+        when :StringC
+          expr[:value]
+        when :IfC
+          condition = evaluate_expression(expr[:condition])
+          if condition
+            evaluate_expression(expr[:true_expr])
+          else
+            evaluate_expression(expr[:false_expr])
+          end
+        when :Where
+          bindings = expr[:bindings]
+          evaluate_with_bindings(expr[:expression], bindings)
+        when :LamC
+          ids = expr[:ids]
+          result_expr = expr[:expression]
+          result = {}
+          ids.each do |id|
+            result[id] = evaluate_expression(result_expr)
+          end
+          result
+        when :AppC
+          function = evaluate_expression(expr[:fun])
+          arguments = expr[:expressions].map { |e| evaluate_expression(e) }
+          
+          if function == "+"
+            puts arguments[0] + arguments[1]
+          end
+          if function == "-"
+            puts arguments[0] - arguments[1]
+          end
+          if function == "/"
+            puts arguments[0] / arguments[1]
+          end
+          if function == "*"
+            puts arguments[0] * arguments[1]
+          end
+        end
+      end
+    
+      def evaluate_with_bindings(expr, bindings)
+        bindings.each do |id, value|
+          define({ id_list: id, expr: evaluate_expression(value) })
+        end
+        evaluate_expression(expr)
+      end
+    end
+    
+    # define a new interpreter
+    interpreter = Interpreter.new
+    
+    # create program
+    program = [
+        { defn: {
+            id_list: [],
+            expr:
+                { type: :NumC,
+                  value: 2
+                }
+            }
+        },
+        { defn: {
+            id_list: [],
+            expr:
+                { type: :StringC,
+                  value: "hello world!"
+                }
+            }
+        },
+        { defn: {
+            id_list: [],
+            expr:
+                { type: :AppC,
+                  fun: { type: :IdC, name: 'add'},
+                  expressions: [
+                      { type: :NumC, value: 1},
+                      { type: :NumC, value: 2}
+                  ]
+                }
+            }
+        }
+    ]
+    
+   interpreter.evaluate(program)
