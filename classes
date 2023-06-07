@@ -1,0 +1,37 @@
+class ExprC
+end
+
+class NumC < ExprC
+    attr_reader :num
+    def initialize(num)
+        @num = num
+    end
+end
+class StringC < ExprC
+    attr_reader :str
+    def initialize(str)
+        @str = str
+    end
+end
+class AppC < ExprC
+    attr_reader :funct
+    attr_reader :args
+    def initialize(funct, args)
+        @funct = funct
+        @args = args
+    end
+end
+class IfC < ExprC
+    attr_reader :a
+    attr_reader :b
+    attr_reader :c
+    def initialize(a, b, c)
+        @a = a
+        @b = b
+        @c = c
+    end
+end
+
+
+n1 = NumC.new(10)
+puts n1.num
