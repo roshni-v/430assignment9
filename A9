@@ -16,7 +16,10 @@ Exp : Num
 class Interpreter
     def initialize()
       @definitions = {}
-      @definitions['add'] = '+'
+      @definitions['+'] = '+'
+      @definitions['-'] = '-'
+      @definitions['*'] = '*'
+      @definitions['/'] = '/'
     end
   
     def evaluate(prog)
@@ -114,7 +117,7 @@ class Interpreter
             id_list: [],
             expr:
                 { type: :AppC,
-                  fun: { type: :IdC, name: 'add'},
+                  fun: { type: :IdC, name: '/'},
                   expressions: [
                       { type: :NumC, value: 1},
                       { type: :NumC, value: 2}
