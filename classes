@@ -81,64 +81,61 @@ class Interpreter
     @env[id]
    end
 
-   def evaluate_expression(expr)
-    case expr[:type]
-      when :NumC
-        expr[:value]
-      when :IdC
-        lookup(expr[:name])
-      when :StringC
-        expr[:value]
-      when :IfC
-        condition = evaluate_expression(expr[:condition])
-        if condition
-          evaluate_expression(expr[:true_expr])
+   def top_interp()
+    puts interp(@exprc)
+   end
+
+   def interp(exprc)
+    case exprc.class.name
+      when "NumC"
+        exprc.num
+      when "IdC"
+        lookup(exprc.id)
+      when "StringC"
+        exprc.str
+      when "IfC"
+        cond = interp(exprc.cond)
+        if cond
+            interp(exprc.true_expr)
         else
-          evaluate_expression(expr[:false_expr])
+            interp(exprc.false_expr)
         end
-      when :Where
-        bindings = expr[:bindings]
-        evaluate_with_bindings(expr[:expression], bindings)
-      when :LamC
-        ids = expr[:ids]
-        result_expr = expr[:expression]
-        result = {}
-        ids.each do |id|
-          result[id] = evaluate_expression(result_expr)
-        end
-        result
-      when :AppC
-        function = evaluate_expression(expr[:fun])
-        arguments = expr[:expressions].map { |e| evaluate_expression(e) }
+      when "LamC"
+        params = exprc.params
+        body = exprc.body
+        # TODO
+      when "AppC"
+        funct = interp(exprc.funct)
+        args = exprc.args.map { |a| interp(a) }
         
-        if function == "+"
-          puts arguments[0] + arguments[1]
-        end
-        if function == "-"
-          puts arguments[0] - arguments[1]
+        case funct
+        when "+"
+          args[0] + args[1]
+        when "-"
+          args[0] - args[1]
           # puts arguments[0].send("-", arguments[1])
+        when "/"
+          args[0] / args[1]
+        when "*"
+          args[0] * args[1]
+        when "<="
+          args[0] <= args[1]
+        when "=="
+          args[0] == args[1]
+        else
+          puts "operator not found"
         end
-        if function == "/"
-          puts arguments[0] / arguments[1]
-        end
-        if function == "*"
-          puts arguments[0] * arguments[1]
-        end
-        if function == "<="
-          puts arguments[0] <= arguments[1]
-        end
-        if function == "=="
-          puts arguments[0] == arguments[1]
-        end   
-        if function == "true"
-          puts arguments[0] = true
-          # puts arguments[0].send("-", arguments[1])
-        end        
+      else
+        puts "class not found"        
       end
     end
 end
 
-interpreter = Interpreter.new.initialize(NumC.new(10))
-    
-    
+interpreter = Interpreter.new(n_test)
+interpreter.top_interp()
 
+interpreter = Interpreter.new(str_test)
+interpreter.top_interp()
+
+interpreter = Interpreter.new(if_test)
+interpreter.top_interp()
