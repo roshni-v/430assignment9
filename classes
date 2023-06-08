@@ -62,3 +62,83 @@ puts if_test.true_expr.str
 lam_test = LamC.new(['a', 'b'],  AppC.new(IdC.new('+'), [IdC.new('a'), IdC.new('b')]))
 puts lam_test.params
 puts lam_test.body
+
+class Interpreter
+   attr_reader :exprc
+   def initialize(exprc)
+    @exprc = exprc
+
+    @env = {}
+    @env['+'] = '+'
+    @env['-'] = '-'
+    @env['*'] = '*'
+    @env['/'] = '/'
+    @env['<='] = '<='
+    @env['equal?'] = '=='
+   end
+
+   def lookup(id)
+    @env[id]
+   end
+
+   def evaluate_expression(expr)
+    case expr[:type]
+      when :NumC
+        expr[:value]
+      when :IdC
+        lookup(expr[:name])
+      when :StringC
+        expr[:value]
+      when :IfC
+        condition = evaluate_expression(expr[:condition])
+        if condition
+          evaluate_expression(expr[:true_expr])
+        else
+          evaluate_expression(expr[:false_expr])
+        end
+      when :Where
+        bindings = expr[:bindings]
+        evaluate_with_bindings(expr[:expression], bindings)
+      when :LamC
+        ids = expr[:ids]
+        result_expr = expr[:expression]
+        result = {}
+        ids.each do |id|
+          result[id] = evaluate_expression(result_expr)
+        end
+        result
+      when :AppC
+        function = evaluate_expression(expr[:fun])
+        arguments = expr[:expressions].map { |e| evaluate_expression(e) }
+        
+        if function == "+"
+          puts arguments[0] + arguments[1]
+        end
+        if function == "-"
+          puts arguments[0] - arguments[1]
+          # puts arguments[0].send("-", arguments[1])
+        end
+        if function == "/"
+          puts arguments[0] / arguments[1]
+        end
+        if function == "*"
+          puts arguments[0] * arguments[1]
+        end
+        if function == "<="
+          puts arguments[0] <= arguments[1]
+        end
+        if function == "=="
+          puts arguments[0] == arguments[1]
+        end   
+        if function == "true"
+          puts arguments[0] = true
+          # puts arguments[0].send("-", arguments[1])
+        end        
+      end
+    end
+end
+
+interpreter = Interpreter.new.initialize(NumC.new(10))
+    
+    
+
