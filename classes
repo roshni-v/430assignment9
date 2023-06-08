@@ -7,10 +7,34 @@ class NumC < ExprC
         @num = num
     end
 end
+class IdC < ExprC
+    attr_reader :id
+    def initialize(id)
+        @id = id
+    end
+end
 class StringC < ExprC
     attr_reader :str
     def initialize(str)
         @str = str
+    end
+end
+class IfC < ExprC
+    attr_reader :true_expr
+    attr_reader :cond
+    attr_reader :false_expr
+    def initialize(true_expr, cond, false_expr)
+        @true_expr = true_expr
+        @cond = cond
+        @false_expr = false_expr
+    end
+end
+class LamC < ExprC
+    attr_reader :params
+    attr_reader :body
+    def initialize(params, body)
+        @params = params
+        @body = body
     end
 end
 class AppC < ExprC
@@ -21,17 +45,20 @@ class AppC < ExprC
         @args = args
     end
 end
-class IfC < ExprC
-    attr_reader :a
-    attr_reader :b
-    attr_reader :c
-    def initialize(a, b, c)
-        @a = a
-        @b = b
-        @c = c
-    end
-end
 
 
-n1 = NumC.new(10)
-puts n1.num
+n_test = NumC.new(10)
+puts n_test.num
+
+str_test = StringC.new("hello world")
+puts str_test.str
+
+id_test = IdC.new('id a')
+puts id_test.id
+
+if_test = IfC.new(StringC.new("true"), AppC.new(IdC.new('equal?'), [NumC.new(1), NumC.new(1)]), StringC.new("false"))
+puts if_test.true_expr.str
+
+lam_test = LamC.new(['a', 'b'],  AppC.new(IdC.new('+'), [IdC.new('a'), IdC.new('b')]))
+puts lam_test.params
+puts lam_test.body
