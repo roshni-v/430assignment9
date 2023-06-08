@@ -46,6 +46,43 @@ class AppC < ExprC
     end
 end
 
+class Value 
+end
+
+class NumV < Value
+  attr_reader :num
+    def initialize(num)
+        @num = num
+    end
+end
+class StringV < Value
+  attr_reader :str
+  def initialize(str)
+      @str = str
+  end
+end
+class BoolV < Value
+  attr_reader :b 
+  def initialize(b)
+    @b = b 
+  end
+end
+class CloV < Value
+  attr_reader :args
+  attr_reader :body
+  def initialize(args, body, env)
+      @args = args
+      @body = body
+      @env = env
+  end
+end
+class PrimopV < Value
+  attr_reader :sym
+  def initialize(sym)
+      @sym = sym
+  end
+end
+
 
 n_test = NumC.new(10)
 puts n_test.num
@@ -88,11 +125,11 @@ class Interpreter
    def interp(exprc)
     case exprc.class.name
       when "NumC"
-        exprc.num
+        NumV.new(exprc.num)
       when "IdC"
         lookup(exprc.id)
       when "StringC"
-        exprc.str
+        StringV.new(exprc.str)
       when "IfC"
         cond = interp(exprc.cond)
         if cond
@@ -103,25 +140,25 @@ class Interpreter
       when "LamC"
         params = exprc.params
         body = exprc.body
-        # TODO
+        CloV.new(params, body, @env)
       when "AppC"
         funct = interp(exprc.funct)
         args = exprc.args.map { |a| interp(a) }
         
         case funct
         when "+"
-          args[0] + args[1]
+          NumV.new(args[0] + args[1])
         when "-"
-          args[0] - args[1]
+          NumV.new(args[0] - args[1])
           # puts arguments[0].send("-", arguments[1])
         when "/"
-          args[0] / args[1]
+          NumV.new(args[0] / args[1])
         when "*"
-          args[0] * args[1]
+          NumV.new(args[0] * args[1])
         when "<="
-          args[0] <= args[1]
+          BoolV.new(args[0] <= args[1])
         when "=="
-          args[0] == args[1]
+          BoolV.new(args[0] == args[1])
         else
           puts "operator not found"
         end
@@ -138,4 +175,7 @@ interpreter = Interpreter.new(str_test)
 interpreter.top_interp()
 
 interpreter = Interpreter.new(if_test)
+interpreter.top_interp()
+
+interpreter = Interpreter.new(lam_test)
 interpreter.top_interp()
