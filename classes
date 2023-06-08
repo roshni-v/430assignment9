@@ -98,7 +98,7 @@ class PrimopV < Value
   end
 end
 
-=begin
+
 n_test = NumC.new(10)
 puts n_test.num
 
@@ -118,7 +118,7 @@ puts lam_test.body
 app_test = AppC.new(IdC.new('equal?'), [NumC.new(4), NumC.new(4)])
 puts app_test.funct
 puts app_test.args
-=end
+
 
 class Interpreter
    attr_reader :exprc
@@ -188,7 +188,6 @@ class Interpreter
     end
 end
 
-=begin
 interpreter = Interpreter.new(n_test)
 interpreter.top_interp()
 
@@ -203,7 +202,7 @@ interpreter.top_interp()
 
 interpreter = Interpreter.new(app_test)
 interpreter.top_interp
-=end
+
 
 class Parser
   def parse(sexp)
