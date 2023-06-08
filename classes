@@ -1,3 +1,18 @@
+=begin
+PROG : DEFN+
+
+DEFN : {def {id id ...} = EXPR}
+
+Exp : Num
+    | id
+    | String
+    | {Expr if Expr else Expr}
+    | {Expr where {[id := Expr] ...}}
+    | {{id ...} => Expr}
+    | {Expr Expr ...}
+=end
+
+
 class ExprC
 end
 
@@ -83,7 +98,7 @@ class PrimopV < Value
   end
 end
 
-
+=begin
 n_test = NumC.new(10)
 puts n_test.num
 
@@ -103,6 +118,7 @@ puts lam_test.body
 app_test = AppC.new(IdC.new('equal?'), [NumC.new(4), NumC.new(4)])
 puts app_test.funct
 puts app_test.args
+=end
 
 class Interpreter
    attr_reader :exprc
@@ -172,6 +188,7 @@ class Interpreter
     end
 end
 
+=begin
 interpreter = Interpreter.new(n_test)
 interpreter.top_interp()
 
@@ -186,3 +203,22 @@ interpreter.top_interp()
 
 interpreter = Interpreter.new(app_test)
 interpreter.top_interp
+=end
+
+class Parser
+  def parse(sexp)
+    sexp.each do |elem|
+      case elem
+        when String
+          puts StringC.new(elem)
+        when Integer
+          puts NumC.new(elem)
+      end
+    end
+  end
+end
+
+
+if_test = [4, 'if', 3, 'else', 5]
+parser = Parser.new()
+parser.parse(if_test)
