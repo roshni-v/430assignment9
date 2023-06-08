@@ -170,7 +170,6 @@ class Interpreter
           NumV.new(args[0] + args[1])
         when "-"
           NumV.new(args[0] - args[1])
-          # puts arguments[0].send("-", arguments[1])
         when "/"
           NumV.new(args[0] / args[1])
         when "*"
@@ -205,10 +204,21 @@ interpreter.top_interp
 
 
 class Parser
+  def parse2(sexp)
+    case sexp
+    in Integer
+      puts NumC.new(sexp)
+    in StringC
+      puts StringC.new(sexp)
+    in [Integer, 'if', Integer, 'else', Integer]
+      puts IfC.new(sexp[0], sexp[2], sexp[4])
+    end
+  end
   def parse(sexp)
     sexp.each do |elem|
       case elem
         when String
+          str = elem
           puts StringC.new(elem)
         when Integer
           puts NumC.new(elem)
@@ -220,4 +230,10 @@ end
 
 if_test = [4, 'if', 3, 'else', 5]
 parser = Parser.new()
-parser.parse(if_test)
+parser.parse2(if_test)
+
+parser = Parser.new()
+parser.parse2(7)
+
+parser = Parser.new()
+parser.parse2('hello')
