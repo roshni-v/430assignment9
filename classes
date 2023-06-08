@@ -100,6 +100,10 @@ lam_test = LamC.new(['a', 'b'],  AppC.new(IdC.new('+'), [IdC.new('a'), IdC.new('
 puts lam_test.params
 puts lam_test.body
 
+app_test = AppC.new(IdC.new('equal?'), [NumC.new(4), NumC.new(4)])
+puts app_test.funct
+puts app_test.args
+
 class Interpreter
    attr_reader :exprc
    def initialize(exprc)
@@ -179,3 +183,6 @@ interpreter.top_interp()
 
 interpreter = Interpreter.new(lam_test)
 interpreter.top_interp()
+
+interpreter = Interpreter.new(app_test)
+interpreter.top_interp
